@@ -2,31 +2,46 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const http = require('http');
+const { Server } = require('socket.io');
+const path = require('path');
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: '*' }
+});
+
+// Make io accessible in routes
+app.set('io', io);
+
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 const authRoutes = require('./routes/auth');
-const authMiddleware = require('./middleware/auth');
-
-// Protected test route
-app.get('/api/protected', authMiddleware, (req, res) => {
-  res.json({ message: 'Access granted', user: req.user });
-});
-
+const sosRoutes = require('./routes/sos');
 app.use('/api/auth', authRoutes);
+app.use('/api/sos', sosRoutes);
 
 app.get('/', (req, res) => res.send('DisasterLink API running'));
+
+// Socket.io
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB connected');
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log(`Server running on port ${process.env.PORT}`);
     });
   })
