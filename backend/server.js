@@ -17,15 +17,20 @@ const io = new Server(server, {
 // Make io accessible in routes
 app.set('io', io);
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 const authRoutes = require('./routes/auth');
 const sosRoutes = require('./routes/sos');
+const volunteerRoutes = require('./routes/volunteer');
 app.use('/api/auth', authRoutes);
 app.use('/api/sos', sosRoutes);
+app.use('/api/volunteer', volunteerRoutes);
 
 app.get('/', (req, res) => res.send('DisasterLink API running'));
 
