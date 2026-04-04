@@ -3,6 +3,7 @@ import MapDashboard from './pages/MapDashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import VolunteerDashboard from './pages/VolunteerDashboard';
+import NGODashboard from './pages/NGODashboard';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -19,6 +20,8 @@ function App() {
         <Route path="*" element={<Navigate to="/login" />} />
         <Route path="/volunteer" element={token ? <VolunteerDashboard /> : <Navigate to="/login" />} />
         <Route path="/volunteer" element={token ? <VolunteerDashboard /> : <Navigate to="/login" />} />
+        <Route path="/ngo" element={token ? <NGODashboard /> : <Navigate to="/login" />} />
+        <Route path="/ngo" element={token ? <NGODashboard /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );

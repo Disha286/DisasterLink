@@ -18,7 +18,10 @@ function Login() {
       const res = await API.post('/auth/login', form);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
-      navigate('/map');
+      const { role } = res.data.user;
+      if (role === 'volunteer') navigate('/volunteer');
+      else if (role === 'ngo') navigate('/ngo');
+      else navigate('/map');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

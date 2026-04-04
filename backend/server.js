@@ -28,9 +28,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const authRoutes = require('./routes/auth');
 const sosRoutes = require('./routes/sos');
 const volunteerRoutes = require('./routes/volunteer');
+const ngoRoutes = require('./routes/ngo');
 app.use('/api/auth', authRoutes);
 app.use('/api/sos', sosRoutes);
 app.use('/api/volunteer', volunteerRoutes);
+app.use('/api/ngo', ngoRoutes);
 
 app.get('/', (req, res) => res.send('DisasterLink API running'));
 
