@@ -10,20 +10,26 @@ function Register() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      await API.post('/auth/register', form);
-      navigate('/login');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  try {
+    await API.post('/auth/register', form);
+    // Auto-login after register
+    const res = await API.post('/auth/login', { email: form.email, password: form.password });
+    localStorage.setItem('token', res.data.token);
+    localStorage.setItem('user', JSON.stringify(res.data.user));
+    const { role } = res.data.user;
+    if (role === 'volunteer') navigate('/volunteer');
+    else if (role === 'ngo') navigate('/ngo');
+    else navigate('/map');
+  } catch (err) {
+    setError(err.response?.data?.message || 'Registration failed');
+  } finally {
+    setLoading(false);
+  }
+};
   const roles = [
     { value:'victim', label:'Victim', desc:'I need help', icon:'🆘', activeColor:'rgba(232,35,26,0.15)', activeBorder:'rgba(232,35,26,0.5)' },
     { value:'volunteer', label:'Volunteer', desc:'I want to help', icon:'🤝', activeColor:'rgba(46,204,113,0.12)', activeBorder:'rgba(46,204,113,0.4)' },
@@ -87,13 +93,17 @@ function Register() {
 
         /* Main */
         .reg-main {
-          flex: 1;
-          display: flex;
-          align-items: flex-start;
-          justify-content: center;
-          padding: 48px 24px 80px;
-          position: relative; z-index: 2;
-        }
+          flex:1;
+          display:flex;
+          align-items:flex-start;
+          justify-content:center;
+          padding:48px 24px 80px; 
+          position:relative; 
+          z-index:2; 
+          overflow-y:auto; 
+          max-height:calc(100vh - 56px); 
+          }
+          
         .reg-main::before {
           content: '';
           position: absolute;

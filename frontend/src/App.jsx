@@ -13,15 +13,10 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/map"
-          element={token ? <MapDashboard /> : <Navigate to="/login" />}
-        />
+        <Route path="/map" element={token ? <MapDashboard /> : <Navigate to="/login" />} />
+        <Route path="/volunteer" element={token ? <VolunteerDashboard /> : <Navigate to="/login" />} />
+        <Route path="/ngo" element={token ? <NGODashboard /> : <Navigate to="/login" />} />
         <Route path="*" element={<Navigate to="/login" />} />
-        <Route path="/volunteer" element={token ? <VolunteerDashboard /> : <Navigate to="/login" />} />
-        <Route path="/volunteer" element={token ? <VolunteerDashboard /> : <Navigate to="/login" />} />
-        <Route path="/ngo" element={token ? <NGODashboard /> : <Navigate to="/login" />} />
-        <Route path="/ngo" element={token ? <NGODashboard /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
