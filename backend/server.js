@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const chatRoutes = require('./routes/chat');
 
 dotenv.config();
 
@@ -33,12 +34,20 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sos', sosRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/ngo', ngoRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.get('/', (req, res) => res.send('DisasterLink API running'));
 
 // Socket.io
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
+
+  // Join a room
+  socket.on('join-room', (room) => {
+    socket.join(room);
+    console.log(`Socket ${socket.id} joined room: ${room}`);
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });

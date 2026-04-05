@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import API from '../api/axios';
+import Chat from '../components/Chat';
+import useSocketNotifications from '../hooks/useSocketNotifications';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -60,6 +62,7 @@ function MapDashboard() {
   const [isDark, setIsDark] = useState(true);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const t = isDark ? themes.dark : themes.light;
+  useSocketNotifications();
 
   const fetchSOS = async () => {
     try {
@@ -323,6 +326,7 @@ function MapDashboard() {
             )}
           </MapContainer>
         </div>
+        <Chat room="general" />
       </div>
     </>
   );

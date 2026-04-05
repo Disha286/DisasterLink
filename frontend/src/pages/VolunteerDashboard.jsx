@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import Chat from '../components/Chat';
+import useSocketNotifications from '../hooks/useSocketNotifications';
 
 const urgencyConfig = {
   critical: { color: '#E8231A', bg: 'rgba(232,35,26,0.1)', border: 'rgba(232,35,26,0.3)' },
@@ -23,6 +25,7 @@ function VolunteerDashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const t = isDark ? themes.dark : themes.light;
+  useSocketNotifications();
 
   const fetchData = async () => {
     try {
@@ -280,6 +283,7 @@ function VolunteerDashboard() {
             </div>
           </div>
         )}
+        <Chat room="general" />
       </div>
     </>
   );

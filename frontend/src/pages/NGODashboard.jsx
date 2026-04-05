@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
+import Chat from '../components/Chat';
+import useSocketNotifications from '../hooks/useSocketNotifications';
 
 const urgencyConfig = {
   critical: { color: '#E8231A', bg: 'rgba(232,35,26,0.1)', border: 'rgba(232,35,26,0.3)' },
@@ -29,6 +31,7 @@ function NGODashboard() {
   const [editingRes, setEditingRes] = useState(null);
   const [broadForm, setBroadForm] = useState({ title:'', message:'', zone:'', type:'info' });
   const [broadSuccess, setBroadSuccess] = useState('');
+  useSocketNotifications();
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -378,6 +381,7 @@ function NGODashboard() {
             )}
           </div>
         </div>
+        <Chat room="general" />
       </div>
     </>
   );
