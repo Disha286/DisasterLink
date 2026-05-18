@@ -20,7 +20,12 @@ const io = new Server(server, {
 app.set('io', io);
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://disaster-link-git-main-disha286s-projects.vercel.app', 'https://disaster-link.vercel.app'],
+  origin: [
+    'http://localhost:5173',
+    'https://disaster-link-eta.vercel.app',
+    'https://disaster-link-git-main-disha286s-projects.vercel.app',
+    'https://disaster-link-hwkix7t0t-disha286s-projects.vercel.app'
+  ],
   credentials: true
 }));
 app.use(express.json());
