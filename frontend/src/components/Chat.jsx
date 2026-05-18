@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import API from '../api/axios';
 
-const socket = io('http://localhost:5000');
+const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000');
 
 function Chat({ room, receiverId }) {
   const [messages, setMessages] = useState([]);
