@@ -6,6 +6,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const chatRoutes = require('./routes/chat');
+const analyticsRoutes = require('./routes/analytics');
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/api/sos', sosRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/ngo', ngoRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.get('/', (req, res) => res.send('DisasterLink API running'));
 

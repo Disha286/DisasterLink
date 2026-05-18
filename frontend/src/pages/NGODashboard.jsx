@@ -199,9 +199,13 @@ function NGODashboard() {
               { key:'volunteers', icon:'🤝', label:'Volunteers' },
               { key:'resources', icon:'📦', label:'Resources' },
               { key:'broadcast', icon:'📢', label:'Broadcast' },
+              { key:'analytics', icon:'📈', label:'Analytics' },
             ].map(item => (
               <div key={item.key} className={`sidebar-item${activeTab === item.key ? ' active' : ''}`}
-                onClick={() => setActiveTab(item.key)}>
+                onClick={() => {
+  if (item.key === 'analytics') { navigate('/analytics'); return; }
+  setActiveTab(item.key);
+}}>
                 <span className="sidebar-icon">{item.icon}</span>
                 {item.label}
               </div>
