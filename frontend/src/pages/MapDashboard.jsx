@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import API from '../api/axios';
@@ -60,6 +60,7 @@ function MapDashboard() {
   const [filter, setFilter] = useState('all');
   const [lastUpdated, setLastUpdated] = useState('');
   const [isDark, setIsDark] = useState(true);
+  const [selectedSOS, setSelectedSOS] = useState(null);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const t = isDark ? themes.dark : themes.light;
   useSocketNotifications();
@@ -264,6 +265,16 @@ function MapDashboard() {
           </div>
 
           <div className="nav-right">
+            {user.role === 'volunteer' && (
+    <button className="filter-btn" onClick={() => window.location.href='/volunteer'}>
+      My Dashboard
+    </button>
+  )}
+  {user.role === 'ngo' && (
+    <button className="filter-btn" onClick={() => window.location.href='/ngo'}>
+      NGO Dashboard
+    </button>
+  )}
             <div className="nav-user">
               <span>{user.role?.toUpperCase()}</span> · {user.name}
             </div>
@@ -304,28 +315,83 @@ function MapDashboard() {
             {filtered.map(sos =>
               sos.location?.lat && sos.location?.lng ? (
                 <Marker key={sos._id}
-                  position={[sos.location.lat, sos.location.lng]}
-                  icon={getMarkerIcon(sos.urgency)}>
-                  <Popup>
-                    <div className="popup-wrap">
-                      <div className="popup-type">{sos.type?.toUpperCase()}</div>
-                      <div className="popup-badge" style={{
-                        background: urgencyConfig[sos.urgency]?.color + '22',
-                        color: urgencyConfig[sos.urgency]?.color,
-                        border: `1px solid ${urgencyConfig[sos.urgency]?.color}44`
-                      }}>{sos.urgency}</div>
-                      <div className="popup-desc">{sos.description}</div>
-                      <div className="popup-meta">
-                        📍 {sos.location?.address}<br />
-                        STATUS · {sos.status?.toUpperCase()}
-                      </div>
-                    </div>
-                  </Popup>
+                position={[sos.location.lat, sos.location.lng]}
+                icon={getMarkerIcon(sos.urgency)}
+                eventHandlers={{ click: () => setSelectedSOS(sos) }}>
                 </Marker>
               ) : null
             )}
           </MapContainer>
         </div>
+        {selectedSOS && (
+  <div style={{
+    position:'fixed', inset:0, background:'rgba(0,0,0,0.7)',
+    zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center'
+  }} onClick={() => setSelectedSOS(null)}>
+    <div style={{
+      background:'#141414', border:'1px solid #2A2A2A', borderRadius:8,
+      padding:32, width:440, position:'relative',
+      boxShadow:'0 24px 60px rgba(0,0,0,0.6)',
+      fontFamily:'DM Sans,sans-serif'
+    }} onClick={e => e.stopPropagation()}>
+      <div style={{ position:'absolute', top:0, left:0, right:0, height:3,
+        background: urgencyConfig[selectedSOS.urgency]?.color || '#E8231A',
+        borderRadius:'8px 8px 0 0' }} />
+      <button onClick={() => setSelectedSOS(null)} style={{
+        position:'absolute', top:16, right:16, background:'transparent',
+        border:'none', color:'#7A7570', cursor:'pointer', fontSize:18
+      }}>✕</button>
+      <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16, marginTop:8 }}>
+        <div style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:32, letterSpacing:1, color:'#E8E4DC' }}>
+          {selectedSOS.type?.toUpperCase()}
+        </div>
+        <div style={{
+          padding:'3px 10px', borderRadius:2,
+          background: urgencyConfig[selectedSOS.urgency]?.bg || 'rgba(232,35,26,0.1)',
+          color: urgencyConfig[selectedSOS.urgency]?.color,
+          border: `1px solid ${urgencyConfig[selectedSOS.urgency]?.color}44`,
+          fontFamily:'JetBrains Mono,monospace', fontSize:11, letterSpacing:1, textTransform:'uppercase'
+        }}>{selectedSOS.urgency}</div>
+        <div style={{
+          padding:'3px 10px', borderRadius:2, background:'rgba(255,255,255,0.05)',
+          color:'#7A7570', border:'1px solid #2A2A2A',
+          fontFamily:'JetBrains Mono,monospace', fontSize:11, letterSpacing:1, textTransform:'uppercase'
+        }}>{selectedSOS.status}</div>
+      </div>
+      <div style={{ fontSize:14, color:'#E8E4DC', lineHeight:1.6, marginBottom:20 }}>
+        {selectedSOS.description}
+      </div>
+      <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:24 }}>
+        {[
+          { label:'Location', value: selectedSOS.location?.address },
+          { label:'Reported At', value: new Date(selectedSOS.createdAt).toLocaleString() },
+        ].map((item, i) => (
+          <div key={i} style={{ display:'flex', gap:12 }}>
+            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#7A7570',
+              letterSpacing:2, textTransform:'uppercase', minWidth:110 }}>{item.label}</div>
+            <div style={{ fontSize:13, color:'#E8E4DC' }}>{item.value}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display:'flex', gap:10 }}>
+        <button onClick={() => setSelectedSOS(null)} style={{
+          flex:1, padding:'11px', background:'transparent',
+          border:'1px solid #2A2A2A', color:'#7A7570', borderRadius:4,
+          fontFamily:'JetBrains Mono,monospace', fontSize:11, letterSpacing:1,
+          textTransform:'uppercase', cursor:'pointer'
+        }}>Close</button>
+        {user.role === 'volunteer' && selectedSOS.status === 'pending' && (
+          <button onClick={() => window.location.href='/volunteer'} style={{
+            flex:1, padding:'11px', background:'#E8231A',
+            border:'none', color:'#fff', borderRadius:4,
+            fontFamily:'JetBrains Mono,monospace', fontSize:11, letterSpacing:1,
+            textTransform:'uppercase', cursor:'pointer'
+          }}>Go to Dashboard →</button>
+        )}
+      </div>
+    </div>
+  </div>
+)}
         <Chat room="general" />
       </div>
     </>
