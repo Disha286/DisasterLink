@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import API from '../api/axios';
 import Chat from '../components/Chat';
 import useSocketNotifications from '../hooks/useSocketNotifications';
+import SOSForm from '../components/SOSForm';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -392,6 +393,7 @@ function MapDashboard() {
     </div>
   </div>
 )}
+        {user.role === 'victim' && <SOSForm />}
         <Chat room="general" />
       </div>
     </>
